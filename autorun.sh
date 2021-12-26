@@ -9,3 +9,5 @@ echo "Running..."
 ./BECPU
 
 echo "Cleaning..."
+rm output.bin
+rm BECPU
