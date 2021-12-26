@@ -1,0 +1,20 @@
+#bits 8
+# ruledef
+{
+	nop => 0x00
+	lda, {address} => 0x1 @ address`4
+	add, {address} => 0x2 @ address`4
+	sub, {address} => 0x3 @ address`4
+	sta, {address} => 0x4 @ address`4
+	lda, #{value} => 0x5 @ value`4
+	jmp, {address} => 0x6 @ address`4
+	jc, {address} => 0x7 @ address`4
+	jz, {address} => 0x8 @ address`4
+	add, #{value} => 0x9 @ value`4
+	sub, #{value} => 0xa @ value`4
+	ldb, {address} => 0xb @ address`4
+	jnc, {address} => 0xc @ address`4
+	jnz, {address} => 0xd @ address`4
+	out => 0xe0
+	hlt => 0xf0
+}
