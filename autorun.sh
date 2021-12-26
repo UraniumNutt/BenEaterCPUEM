@@ -1,4 +1,13 @@
+# run the code
+echo "Compiling..."
+
 cd bin
 ./customasm input.s -o output.bin
-g++ BECPU.cpp
-./a.out
+g++ *.cpp -o BECPU 
+
+echo "Running..."
+./BECPU
+
+echo "Cleaning..."
+rm output.bin
+rm BECPU
