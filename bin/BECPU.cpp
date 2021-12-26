@@ -275,31 +275,278 @@ void executeInstruction(float clock) {
 
         break;
 
-        case (0x07): // NOP
+        case (0x07): // JC
+
+            if (carryFlag == false) {
+
+                showState(); // Step 3
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 4
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 5
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 6
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+
+            }
+            if (carryFlag == true) {
+
+                showState(); // Step 3
+                PC = (IR & 0b00001111);
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 4
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 5
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 6
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+            }
+
 
         break;
 
-        case (0x08): // NOP
+        case (0x08): // JZ
+
+            if (zeroFlag == false) {
+
+                            showState(); // Step 3
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 4
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 5
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 6
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+
+                        }
+                        if (zeroFlag == true) {
+
+                            showState(); // Step 3
+                            PC = (IR & 0b00001111);
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 4
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 5
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 6
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                        }
 
         break;
 
-        case (0x09): // NOP
+        case (0x09): // ADD #
+
+            showState(); // Step 3
+            B = (IR & 0b00001111);
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 4
+            if ((int) A + (int) B > 255) {
+                carryFlag = true; // if overflow set carry flag
+            }
+            else {
+                carryFlag = false;
+            }
+            Sum = A + B;
+            A = Sum;
+            if (Sum == 0) {
+                zeroFlag = true; // if sum is 0 set zero flag
+            }
+            else {
+                zeroFlag = false;
+            }
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 5
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 6
+            StepCounter++;
+            usleep(microsecondsPeriod);
 
         break;
 
-        case (0x0A): // NOP
+        case (0x0A): // SUB #
+
+            showState(); // Step 3
+            B = (IR & 0b00001111);
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 4
+            if ((int) A - (int) B < 0) {
+                carryFlag = true; // if overflow set carry flag
+            }
+            else {
+                carryFlag = false;
+            }
+            Sum = A - B;
+            A = Sum;
+            if (Sum == 0) {
+                zeroFlag = true; // if sum is 0 set zero flag
+            }
+            else {
+                zeroFlag = false;
+            }
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 5
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 6
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
 
         break;
 
-        case (0x0B): // NOP
+        case (0x0B): // LDB
+
+            showState(); // Step 3
+            MAR = (IR & 0b00001111);
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 4
+            B = RAM[MAR];
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
+            showState(); // Step 5
+            StepCounter++;
+            usleep(microsecondsPeriod); 
+
+            showState(); // Step 6
+            StepCounter++;
+            usleep(microsecondsPeriod);
+
 
         break;
 
-        case (0x0C): // NOP
+        case (0x0C): // JNC
+
+            if (carryFlag == true) {
+
+                showState(); // Step 3
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 4
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 5
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 6
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+
+            }
+            if (carryFlag == false) {
+
+                showState(); // Step 3
+                PC = (IR & 0b00001111);
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 4
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 5
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+                showState(); // Step 6
+                StepCounter++;
+                usleep(microsecondsPeriod);
+
+            }
 
         break;
 
-        case (0x0D): // NOP
+        case (0x0D): // JNZ
+
+            if (zeroFlag == true) {
+
+                            showState(); // Step 3
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 4
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 5
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 6
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+
+                        }
+                        if (zeroFlag == false) {
+
+                            showState(); // Step 3
+                            PC = (IR & 0b00001111);
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 4
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 5
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                            showState(); // Step 6
+                            StepCounter++;
+                            usleep(microsecondsPeriod);
+
+                        }
 
         break;
 
@@ -328,7 +575,7 @@ void executeInstruction(float clock) {
 
         case (0x0F): // HLT
 
-            showState();
+            showState(); // Step 3
             StepCounter++;
             HLT = true;
             usleep(microsecondsPeriod);
@@ -358,7 +605,7 @@ int main() {
 
     while (!HLT) {
         
-        executeInstruction(10.0);
+        executeInstruction(50.0);
         
     }
     
