@@ -48,107 +48,109 @@ void initRAM() {
 
 }
 
+
+
 void showState() {
 
-	cout << "\033[2J\033[1;1H";
-    cout << hex;
-    //cout << dec;
+    // use escape sequence to clear the screen
+    cout << "\033[2J\033[1;1H";
+
     cout << "----------------------" << endl;
-    cout << "PC: " << (uint) (PC & 0b00001111) << endl;
-    cout << "MAR: " << (uint) (MAR & 0b00001111) << endl;
-    cout << "A: " << (uint) A << endl;
-    cout << "B: " << (uint) B << endl;
-    cout << "Sum: " << (uint) Sum << endl;
-    cout << "Flags, Zero, Carry: " << zeroFlag << carryFlag << endl; 
-    cout << "IR: " << (uint) IR  << endl;
-    cout << dec;
-    cout << "OUT: " << (uint) OUT << endl; // out SHOULD be in decimal
-    cout << hex;
-    cout << "StepCounter: " << (uint) StepCounter  << endl;
+    // use printf to format ouput in hex
+    // print the state of CPU
+    printf("PC: 0x%02X\n", PC);
+    printf("MAR: 0x%02X\n", MAR);
+    printf("A: 0x%02X\n", A);
+    printf("B: 0x%02X\n", B);
+    printf("Sum: 0x%02X\n", Sum);
+    printf("Flags: Z: %d, C: %d\n", zeroFlag, carryFlag);
+    printf("IR: 0x%02X\n", IR);
+    // the output should be a decimal number and step counter should be in decimal
+    printf("OUT: %d\n", OUT);
+    printf("Step Counter: %d\n", StepCounter);
 
-    cout << "RAM: " << endl;
-
+    // now to print the RAM
+    printf("\n");
+    printf("RAM:\n");
     for (int i = 0; i < 16; i++) {
-        cout << i << ": " << (uint) RAM[i] << endl;
+        printf("0x%02X ", RAM[i]);
     }
+    printf("\n");
+
 }
+
 
 void showOUT() {
     cout << dec;
     cout <<  (uint) OUT << endl;
 }
 
+void showAndWait(float microsecondsPeriod) {
+    showState();
+    usleep(microsecondsPeriod);
+}
+
+
 void executeInstruction(float clock) {
 
     int microsecondsPeriod = (1.0 / clock) * 1000000.0;
 
-    showState();
+    showAndWait(microsecondsPeriod);
     MAR = (PC & 0b00001111); // Fetch 1
     StepCounter++;
-    usleep(microsecondsPeriod);
-
-    showState();
+    
+    showAndWait(microsecondsPeriod);
     IR = (RAM[MAR]); // Fetch 2
     PC++;
     StepCounter++;
-    usleep(microsecondsPeriod);
-
     
-
     switch ((IR & 0b11110000) >> 4) { // Top halve of IR has instruction, bottom argument
 
         case (0x00): // NOP
 
-            showState();
+            showAndWait(microsecondsPeriod);
             StepCounter++; // Step 3
-            usleep(microsecondsPeriod);
-            showState();
+            
+            showAndWait(microsecondsPeriod);
             StepCounter++; // Step 4
-            usleep(microsecondsPeriod);
-            showState();
+            
+            showAndWait(microsecondsPeriod);
             StepCounter++; // Step 5
-            usleep(microsecondsPeriod);
-            showState();
+            
+            showAndWait(microsecondsPeriod);
             StepCounter++; // Step 6
-            usleep(microsecondsPeriod);
-
+        
         break;
 
         case (0x01): // LDA
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             MAR = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
-
-            showState(); // Step 4
+            
+            showAndWait(microsecondsPeriod); // Step 4
             A = RAM[MAR];
             StepCounter++;
-            usleep(microsecondsPeriod);
-
-            showState(); // Step 5
+            
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod); 
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod); 
 
         break;
 
         case (0x02): // ADD
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             MAR = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
-
-            showState(); // Step 4
+            
+            showAndWait(microsecondsPeriod); // Step 4
             B = RAM[MAR];
             StepCounter++;
-            usleep(microsecondsPeriod);
-
-            showState(); // Step 5
+            
+            showAndWait(microsecondsPeriod); // Step 5
             if ((int) A + (int) B > 255) {
                 carryFlag = true; // if overflow set carry flag
             }
@@ -165,27 +167,25 @@ void executeInstruction(float clock) {
             }
             
             StepCounter++;
-            usleep(microsecondsPeriod); 
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
-
+            
         break;
 
         case (0x03): // SUB
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             MAR = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             B = RAM[MAR];
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             if ((int) A - (int) B < 0) {
                 carryFlag = true; // if overflow set carry flag
             }
@@ -202,75 +202,75 @@ void executeInstruction(float clock) {
             }
             
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
         break;
 
         case (0x04): // STA
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             MAR = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             RAM[MAR] = A;
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
         break;
 
         case (0x05): // LDI
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             A = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
         break;
 
         case (0x06): // JMP
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             PC = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             StepCounter++;
-            usleep(microsecondsPeriod);            
+                        
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
 
         break;
@@ -279,42 +279,42 @@ void executeInstruction(float clock) {
 
             if (carryFlag == false) {
 
-                showState(); // Step 3
+                showAndWait(microsecondsPeriod); // Step 3
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 4
+                showAndWait(microsecondsPeriod); // Step 4
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 5
+                showAndWait(microsecondsPeriod); // Step 5
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 6
+                showAndWait(microsecondsPeriod); // Step 6
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
 
             }
             if (carryFlag == true) {
 
-                showState(); // Step 3
+                showAndWait(microsecondsPeriod); // Step 3
                 PC = (IR & 0b00001111);
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 4
+                showAndWait(microsecondsPeriod); // Step 4
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 5
+                showAndWait(microsecondsPeriod); // Step 5
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 6
+                showAndWait(microsecondsPeriod); // Step 6
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
             }
 
@@ -325,42 +325,42 @@ void executeInstruction(float clock) {
 
             if (zeroFlag == false) {
 
-                            showState(); // Step 3
+                            showAndWait(microsecondsPeriod); // Step 3
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 4
+                            showAndWait(microsecondsPeriod); // Step 4
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 5
+                            showAndWait(microsecondsPeriod); // Step 5
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 6
+                            showAndWait(microsecondsPeriod); // Step 6
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
 
                         }
                         if (zeroFlag == true) {
 
-                            showState(); // Step 3
+                            showAndWait(microsecondsPeriod); // Step 3
                             PC = (IR & 0b00001111);
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 4
+                            showAndWait(microsecondsPeriod); // Step 4
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 5
+                            showAndWait(microsecondsPeriod); // Step 5
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 6
+                            showAndWait(microsecondsPeriod); // Step 6
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
                         }
 
@@ -368,12 +368,12 @@ void executeInstruction(float clock) {
 
         case (0x09): // ADD #
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             B = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             if ((int) A + (int) B > 255) {
                 carryFlag = true; // if overflow set carry flag
             }
@@ -389,26 +389,26 @@ void executeInstruction(float clock) {
                 zeroFlag = false;
             }
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
         break;
 
         case (0x0A): // SUB #
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             B = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             if ((int) A - (int) B < 0) {
                 carryFlag = true; // if overflow set carry flag
             }
@@ -424,38 +424,38 @@ void executeInstruction(float clock) {
                 zeroFlag = false;
             }
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
 
         break;
 
         case (0x0B): // LDB
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             MAR = (IR & 0b00001111);
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             B = RAM[MAR];
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
 
         break;
@@ -464,42 +464,42 @@ void executeInstruction(float clock) {
 
             if (carryFlag == true) {
 
-                showState(); // Step 3
+                showAndWait(microsecondsPeriod); // Step 3
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 4
+                showAndWait(microsecondsPeriod); // Step 4
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 5
+                showAndWait(microsecondsPeriod); // Step 5
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 6
+                showAndWait(microsecondsPeriod); // Step 6
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
 
             }
             if (carryFlag == false) {
 
-                showState(); // Step 3
+                showAndWait(microsecondsPeriod); // Step 3
                 PC = (IR & 0b00001111);
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 4
+                showAndWait(microsecondsPeriod); // Step 4
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 5
+                showAndWait(microsecondsPeriod); // Step 5
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
-                showState(); // Step 6
+                showAndWait(microsecondsPeriod); // Step 6
                 StepCounter++;
-                usleep(microsecondsPeriod);
+                
 
             }
 
@@ -509,42 +509,42 @@ void executeInstruction(float clock) {
 
             if (zeroFlag == true) {
 
-                            showState(); // Step 3
+                            showAndWait(microsecondsPeriod); // Step 3
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 4
+                            showAndWait(microsecondsPeriod); // Step 4
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 5
+                            showAndWait(microsecondsPeriod); // Step 5
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 6
+                            showAndWait(microsecondsPeriod); // Step 6
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
 
                         }
                         if (zeroFlag == false) {
 
-                            showState(); // Step 3
+                            showAndWait(microsecondsPeriod); // Step 3
                             PC = (IR & 0b00001111);
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 4
+                            showAndWait(microsecondsPeriod); // Step 4
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 5
+                            showAndWait(microsecondsPeriod); // Step 5
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
-                            showState(); // Step 6
+                            showAndWait(microsecondsPeriod); // Step 6
                             StepCounter++;
-                            usleep(microsecondsPeriod);
+                            
 
                         }
 
@@ -552,22 +552,22 @@ void executeInstruction(float clock) {
 
         case (0x0E): // OUT
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             OUT = A;
             StepCounter++;
-            usleep(microsecondsPeriod);
+            
 
-            showState(); // Step 4
+            showAndWait(microsecondsPeriod); // Step 4
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 5
+            showAndWait(microsecondsPeriod); // Step 5
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
 
-            showState(); // Step 6
+            showAndWait(microsecondsPeriod); // Step 6
             StepCounter++;
-            usleep(microsecondsPeriod); 
+             
             
 
         break;
@@ -575,10 +575,10 @@ void executeInstruction(float clock) {
 
         case (0x0F): // HLT
 
-            showState(); // Step 3
+            showAndWait(microsecondsPeriod); // Step 3
             StepCounter++;
             HLT = true;
-            usleep(microsecondsPeriod);
+            
 
         break;
 
@@ -596,16 +596,17 @@ void executeInstruction(float clock) {
 
 int main() {
 
+    // uses escape sequence to clear screen
+    cout << "\033[2J\033[1;1H";
     
-    initRAM();
 
-    
+    initRAM();
 
     //cout << 0xE0 << endl;
 
     while (!HLT) {
         
-        executeInstruction(50.0);
+        executeInstruction(10.0);
         
     }
     
